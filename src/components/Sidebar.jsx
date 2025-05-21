@@ -1,4 +1,4 @@
-import { BsPeopleFill } from "react-icons/bs"; 
+
 import {
   LayoutDashboard,
   Users,         // untuk pelanggan
@@ -15,9 +15,9 @@ import { Link, useLocation } from 'react-router-dom'
 const menuItems = [
   { name: 'Dashboard', icon: <LayoutDashboard />, path: '/' },
   { name: 'Produk', icon: <Box />, path: '/produk' },
-  { name: 'sales', icon: <ShoppingCart />, path: '/sales' },
+  { name: 'Sales', icon: <ShoppingCart />, path: '/sales' },
   { name: 'Laporan', icon: <BarChart2 />, path: '/laporan' },
-  { name: 'Customer', icon: <BsPeopleFill />, path: '/customer' },
+  { name: 'Customer', icon: <BarChart2 />, path: '/customer' },
 ]
 
 const accountItems = [
