@@ -6,6 +6,7 @@ import { Routes, Route } from 'react-router-dom'
 import Dashboard from './Pages/Dashboard'
 import Sidebar from './components/Sidebar'
 import MainLayout from './components/MainLayout'
+import Customer from './Pages/Customer'
 
 
 function App() {
@@ -15,6 +16,7 @@ function App() {
       <Routes>
         <Route element={<MainLayout />}>
           <Route path="/" element={<Dashboard />}/>
+          <Route path="/customer" element={<Customer />}/>
         </Route>
       </Routes>
     </>
