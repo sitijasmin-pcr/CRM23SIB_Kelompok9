@@ -1,3 +1,4 @@
+import { MdAttachMoney } from "react-icons/md"; 
 import { BsPeopleFill } from "react-icons/bs"; 
 import {
   LayoutDashboard,
@@ -17,6 +18,7 @@ const menuItems = [
   { name: 'Produk', icon: <Box />, path: '/produk' },
   { name: 'Laporan', icon: <BarChart2 />, path: '/laporan' },
   { name: 'Customer', icon: <BsPeopleFill />, path: '/customer' },
+  { name: 'Penjualan', icon: <MdAttachMoney />, path: '/penjualan' },
 ]
 
 const accountItems = [
