@@ -9,8 +9,9 @@ import {
   Title,
   Tooltip,
   Legend,
+  ArcElement,
 } from 'chart.js'
-import { Bar, Line } from 'react-chartjs-2' //Perintah untuk menggunakan grafik
+import { Bar, Line, Pie } from 'react-chartjs-2'
 
 ChartJS.register(
   CategoryScale,
@@ -20,46 +21,72 @@ ChartJS.register(
   PointElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
+  ArcElement,
 )
 
 const Dashboard = () => {
-  // Data summary cards
-  const stats = [
-    { label: "Pendapatan Hari Ini", value: "$53,000", percent: "+55%", color: "green" },
-    { label: "Pengguna Hari Ini", value: "2,300", percent: "+3%", color: "blue" },
-    { label: "Klien Baru", value: "+3,462", percent: "-2%", color: "red" },
-    { label: "Penjualan", value: "$103,430", percent: "+5%", color: "purple" },
+  const menus = [
+    { id: 1, name: "Espresso", price: 20000, sold: 124 },
+    { id: 2, name: "Cappuccino", price: 25000, sold: 198 },
+    { id: 3, name: "Matcha Latte", price: 27000, sold: 143 },
+    { id: 4, name: "Americano", price: 18000, sold: 115 },
+    { id: 5, name: "Caramel Macchiato", price: 20000, sold: 174 },
+    { id: 6, name: "Chocolate Frappe", price: 28000, sold: 221 },
+    { id: 7, name: "Strawberry Smoothies", price: 18000, sold: 132 },
+    { id: 8, name: "Roti Bakar", price: 15000, sold: 96 },
+    { id: 9, name: "Kentang Goreng", price: 18000, sold: 109 },
   ]
 
-  // Data untuk grafik Penjualan Bulanan (Bar Chart)
+  const totalPendapatan = menus.reduce((acc, menu) => acc + menu.price * menu.sold, 0)
+  const totalPenjualan = menus.reduce((acc, menu) => acc + menu.sold, 0)
+
+  const stats = [
+    { label: "Pendapatan Hari Ini", value: `Rp ${totalPendapatan.toLocaleString()}`, percent: "+55%", color: "green" },
+    { label: "Pengguna Hari Ini", value: "2,300", percent: "+3%", color: "blue" },
+    { label: "Klien Baru", value: "+3,462", percent: "-2%", color: "red" },
+    { label: "Penjualan", value: totalPenjualan.toLocaleString(), percent: "+5%", color: "purple" },
+  ]
+
   const barData = {
-    labels: ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"],
+    labels: menus.map(menu => menu.name),
     datasets: [
       {
-        label: "Penjualan (dalam ribuan $)",
-        data: [12, 19, 14, 17, 22, 30, 28, 26, 32, 35, 40, 45],
-        backgroundColor: "rgba(99, 102, 241, 0.7)", // purple-600
+        label: "Total Penjualan (Rp)",
+        data: menus.map(menu => menu.sold * menu.price),
+        backgroundColor: "rgba(99, 102, 241, 0.7)",
       },
     ],
   }
 
   const barOptions = {
     responsive: true,
+    maintainAspectRatio: false,
     plugins: {
       legend: { position: 'top' },
-      title: { display: true, text: 'Penjualan Bulanan Tahun Ini' },
+      title: { display: true, text: 'Penjualan Produk Tahun Ini' },
+      tooltip: {
+        callbacks: {
+          label: ctx => `Rp ${ctx.parsed.y.toLocaleString()}`,
+        }
+      }
+    },
+    scales: {
+      y: {
+        ticks: {
+          callback: value => `Rp ${value.toLocaleString()}`,
+        },
+      },
     },
   }
 
-  // Data untuk grafik Pertumbuhan Pelanggan (Line Chart)
   const lineData = {
     labels: ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"],
     datasets: [
       {
         label: "Jumlah Pelanggan",
         data: [50, 75, 120, 180, 220, 260, 300, 350, 400, 430, 460, 500],
-        borderColor: "rgba(59, 130, 246, 1)", // blue-500
+        borderColor: "rgba(59, 130, 246, 1)",
         backgroundColor: "rgba(59, 130, 246, 0.3)",
         fill: true,
         tension: 0.3,
@@ -70,20 +97,81 @@ const Dashboard = () => {
 
   const lineOptions = {
     responsive: true,
+    maintainAspectRatio: false,
     plugins: {
       legend: { position: 'top' },
       title: { display: true, text: 'Pertumbuhan Pelanggan Tahun Ini' },
     },
   }
 
+  const dailySales = [
+    { day: "Senin", sales: 400000 },
+    { day: "Selasa", sales: 600000 },
+    { day: "Rabu", sales: 450000 },
+    { day: "Kamis", sales: 700000 },
+    { day: "Jumat", sales: 500000 },
+    { day: "Sabtu", sales: 300000 },
+    { day: "Minggu", sales: 350000 },
+  ]
+
+  const pieProdukData = {
+    labels: menus.map(menu => menu.name),
+    datasets: [
+      {
+        label: "Jumlah Produk Terjual",
+        data: menus.map(menu => menu.sold),
+        backgroundColor: [
+          "#6366F1", "#3B82F6", "#8B5CF6", "#EC4899", "#F59E0B", "#10B981", "#EF4444", "#14B8A6", "#F97316"
+        ],
+        hoverOffset: 30,
+      },
+    ],
+  }
+
+  const pieProdukOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { position: 'bottom' },
+      title: { display: true, text: 'Proporsi Produk Terlaris (Jumlah Terjual)' },
+    },
+  }
+
+  const pieHariData = {
+    labels: dailySales.map(day => day.day),
+    datasets: [
+      {
+        label: "Pemasukan Harian (Rp)",
+        data: dailySales.map(day => day.sales),
+        backgroundColor: [
+          "#F87171", "#60A5FA", "#34D399", "#A78BFA", "#FBBF24", "#F43F5E", "#3B82F6"
+        ],
+        hoverOffset: 30,
+      },
+    ],
+  }
+
+  const pieHariOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { position: 'bottom' },
+      title: { display: true, text: 'Proporsi Pemasukan Harian' },
+    },
+  }
+
   return (
-    <div className="p-6 space-y-8">
+    <div className="p-6 space-y-10 max-w-7xl mx-auto">
       {/* Statistik utama */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
         {stats.map(({ label, value, percent, color }) => (
-          <div key={label} className="bg-white rounded-xl shadow p-5">
-            <p className="text-sm text-gray-500">{label}</p>
-            <h2 className={`text-2xl font-bold text-${color}-600 flex items-center gap-2`}>
+          <div
+            key={label}
+            className="bg-white rounded-xl shadow p-5 flex flex-col justify-center"
+            style={{ minHeight: '100px' }}
+          >
+            <p className="text-xs sm:text-sm text-gray-500">{label}</p>
+            <h2 className={`text-lg sm:text-xl font-bold text-${color}-600 flex items-center gap-2 mt-1`}>
               {value}
               <span className={`text-xs font-semibold text-${color}-500`}>{percent}</span>
             </h2>
@@ -91,15 +179,27 @@ const Dashboard = () => {
         ))}
       </div>
 
-      {/* Grafik Penjualan Bulanan --Bar
-      Chart*/}
-      <div className="bg-white rounded-xl shadow p-6">
-        <Bar options={barOptions} data={barData} />
-      </div>
+      {/* Grafik utama dan pie dalam grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Bar & Line chart dalam 2 kolom */}
+        <div className="col-span-2 space-y-8">
+          <div className="bg-white rounded-xl shadow p-6" style={{ height: 280 }}>
+            <Bar options={barOptions} data={barData} />
+          </div>
+          <div className="bg-white rounded-xl shadow p-6" style={{ height: 280 }}>
+            <Line options={lineOptions} data={lineData} />
+          </div>
+        </div>
 
-      {/* Grafik Pertumbuhan Pelanggan --Line Chart */} 
-      <div className="bg-white rounded-xl shadow p-6">
-        <Line options={lineOptions} data={lineData} />
+        {/* Pie charts di kolom kanan */}
+        <div className="flex flex-col gap-8">
+          <div className="bg-white rounded-xl shadow p-6" style={{ height: 280 }}>
+            <Pie options={pieProdukOptions} data={pieProdukData} />
+          </div>
+          <div className="bg-white rounded-xl shadow p-6" style={{ height: 280 }}>
+            <Pie options={pieHariOptions} data={pieHariData} />
+          </div>
+        </div>
       </div>
     </div>
   )
