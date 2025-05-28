@@ -1,3 +1,5 @@
+import { FaStore } from "react-icons/fa"; 
+import { AiFillClockCircle } from "react-icons/ai"; 
 import {
   LayoutDashboard,
   Users,         // untuk pelanggan
@@ -16,6 +18,8 @@ const menuItems = [
   { name: 'Produk', icon: <Box />, path: '/produk' },
   { name: 'sales', icon: <ShoppingCart />, path: '/sales' },
   { name: 'Laporan', icon: <BarChart2 />, path: '/laporan' },
+  { name: 'Shift', icon:<AiFillClockCircle />, path: '/shift' },
+  { name: 'Outlet', icon:<FaStore />, path: '/outlets' },
 ]
 
 const accountItems = [

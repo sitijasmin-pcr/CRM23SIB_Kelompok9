@@ -7,6 +7,9 @@ import Dashboard from './Pages/Dashboard'
 import Sidebar from './components/Sidebar'
 import MainLayout from './components/MainLayout'
 import SalesManagement from './Pages/SalesManagement'
+import ShiftManagement from './Pages/ShiftManagement'
+import BranchOutlet from './Pages/BranchOutlet'; // atau sesuaikan path-nya
+
 
 
 function App() {
@@ -17,6 +20,8 @@ function App() {
         <Route element={<MainLayout />}>
           <Route path="/" element={<Dashboard />}/>
           <Route path="/Sales" element={<SalesManagement />}/>
+          <Route path="/shift" element={<ShiftManagement />}/>
+          <Route path="/outlets" element={<BranchOutlet />} />
         </Route>
       </Routes>
     </>
