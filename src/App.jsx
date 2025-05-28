@@ -7,7 +7,6 @@ import Dashboard from './Pages/Dashboard'
 import Sidebar from './components/Sidebar'
 import MainLayout from './components/MainLayout'
 import Customer from './Pages/Customer'
-import SalesManagement from './Pages/SalesManagement'
 
 
 function App() {
@@ -17,7 +16,7 @@ function App() {
       <Routes>
         <Route element={<MainLayout />}>
           <Route path="/" element={<Dashboard />}/>
-          <Route path="/Sales" element={<SalesManagement />}/>
+          <Route path="/customer" element={<Customer />}/>
         </Route>
       </Routes>
     </>

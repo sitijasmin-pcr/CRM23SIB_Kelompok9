@@ -1,3 +1,4 @@
+import { BsPeopleFill } from "react-icons/bs"; 
 import {
   LayoutDashboard,
   Users,         // untuk pelanggan
@@ -18,6 +19,7 @@ const menuItems = [
   { name: 'Produk', icon: <Box />, path: '/produk' },
   { name: 'Sales', icon: <ShoppingCart />, path: '/sales' },
   { name: 'Laporan', icon: <BarChart2 />, path: '/laporan' },
+  { name: 'Customer', icon: <BsPeopleFill />, path: '/customer' },
 ]
 
 const accountItems = [
