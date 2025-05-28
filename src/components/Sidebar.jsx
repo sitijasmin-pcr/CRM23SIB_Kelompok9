@@ -1,4 +1,3 @@
-
 import {
   LayoutDashboard,
   Users,         // untuk pelanggan
@@ -19,10 +18,6 @@ const menuItems = [
   { name: 'Produk', icon: <Box />, path: '/produk' },
   { name: 'Sales', icon: <ShoppingCart />, path: '/sales' },
   { name: 'Laporan', icon: <BarChart2 />, path: '/laporan' },
-  { name: 'Customer', icon: <MdPeopleAlt />, path: '/customer' },
-  { name: 'Produk Terlaris', icon: <FaCoffee />, path: '/produkTerlaris' },
-  { name: 'Feedback', icon: <MdFeedback  />, path: '/feedback' },
-  { name: 'Faq', icon: <FaQuestionCircle />, path: '/faq' },
 ]
 
 const accountItems = [
