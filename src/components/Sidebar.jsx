@@ -10,14 +10,19 @@ import {
   LogIn,
   UserPlus,
 } from 'lucide-react'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom';
+import { FaCoffee, FaQuestionCircle } from "react-icons/fa";
+import { MdPeopleAlt, MdFeedback  } from "react-icons/md";
 
 const menuItems = [
   { name: 'Dashboard', icon: <LayoutDashboard />, path: '/' },
   { name: 'Produk', icon: <Box />, path: '/produk' },
   { name: 'Sales', icon: <ShoppingCart />, path: '/sales' },
   { name: 'Laporan', icon: <BarChart2 />, path: '/laporan' },
-  { name: 'Customer', icon: <BarChart2 />, path: '/customer' },
+  { name: 'Customer', icon: <MdPeopleAlt />, path: '/customer' },
+  { name: 'Produk Terlaris', icon: <FaCoffee />, path: '/produkTerlaris' },
+  { name: 'Feedback', icon: <MdFeedback  />, path: '/feedback' },
+  { name: 'Faq', icon: <FaQuestionCircle />, path: '/faq' },
 ]
 
 const accountItems = [
@@ -33,15 +38,15 @@ const Sidebar = () => {
 
   return (
     <aside className="bg-white w-64 h-screen shadow-lg px-4 py-6 hidden md:block">
-      <div className="text-xl font-bold mb-8 text-purple-700">UMKM CRM</div>
+      <div className="text-xl font-bold mb-8 text-orange-700">Tomoro Coffee</div>
       <nav className="space-y-1">
         {menuItems.map((item) => (
           <Link
             key={item.name}
             to={item.path}
-            className={`flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-purple-100 transition ${
+            className={`flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-orange-100 transition ${
               isActive(item.path)
-                ? 'bg-purple-200 text-purple-800 font-semibold'
+                ? 'bg-orange-200 text-orange-800 font-semibold'
                 : 'text-gray-700'
             }`}
           >
@@ -57,7 +62,7 @@ const Sidebar = () => {
           <Link
             key={item.name}
             to={item.path}
-            className={`flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-purple-100 transition ${
+            className={`flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-orange-100 transition ${
               isActive(item.path)
                 ? 'bg-purple-200 text-purple-800 font-semibold'
                 : 'text-gray-700'

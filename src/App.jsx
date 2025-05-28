@@ -8,6 +8,9 @@ import Sidebar from './components/Sidebar'
 import MainLayout from './components/MainLayout'
 import Customer from './Pages/Customer'
 import SalesManagement from './Pages/SalesManagement'
+import ProdukTerlaris from './Pages/ProdukTerlaris'
+import Feedback from './Pages/Feedback'
+import Faq from './Pages/FAQ'
 
 
 function App() {
@@ -18,7 +21,10 @@ function App() {
         <Route element={<MainLayout />}>
           <Route path="/" element={<Dashboard />}/>
           <Route path="/customer" element={<Customer />}/>
-          <Route path="/Sales" element={<SalesManagement />}/>
+          <Route path="/sales" element={<SalesManagement />}/>
+          <Route path="/produkTerlaris" element={<ProdukTerlaris />}/>
+          <Route path="/feedback" element={<Feedback />}/>
+          <Route path="/faq" element={<Faq />}/>
         </Route>
       </Routes>
     </>
