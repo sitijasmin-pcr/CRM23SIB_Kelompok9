@@ -104,6 +104,47 @@ const Dashboard = () => {
     },
   }
 
+  const forecastData = {
+    labels: ["Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des", "Jan (Forecast)", "Feb (Forecast)", "Mar (Forecast)"],
+    datasets: [
+      {
+        label: "Forecast Pendapatan Bulanan (Rp)",
+        data: [4500000, 5000000, 5200000, 5400000, 5600000, 5800000, 6000000, 6200000, 6400000, 6600000],
+        borderColor: function(context) {
+          const index = context.dataIndex;
+          return index >= 7 ? 'rgba(245, 158, 11, 1)' : 'rgba(34, 197, 94, 1)';
+        },
+        backgroundColor: function(context) {
+          const index = context.dataIndex;
+          return index >= 7 ? 'rgba(245, 158, 11, 0.3)' : 'rgba(34, 197, 94, 0.3)';
+        },
+        fill: true,
+        tension: 0.3,
+        pointRadius: 4,
+        segment: {
+          borderColor: ctx => ctx.p0DataIndex >= 7 ? 'rgba(245, 158, 11, 1)' : 'rgba(34, 197, 94, 1)',
+          backgroundColor: ctx => ctx.p0DataIndex >= 7 ? 'rgba(245, 158, 11, 0.3)' : 'rgba(34, 197, 94, 0.3)',
+        },
+      },
+    ],
+  }
+
+  const forecastOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { position: 'top' },
+      title: { display: true, text: 'Forecast Pendapatan per Bulan' },
+    },
+    scales: {
+      y: {
+        ticks: {
+          callback: value => `Rp ${value.toLocaleString()}`,
+        },
+      },
+    },
+  }
+
   const dailySales = [
     { day: "Senin", sales: 400000 },
     { day: "Selasa", sales: 600000 },
@@ -188,6 +229,9 @@ const Dashboard = () => {
           </div>
           <div className="bg-white rounded-xl shadow p-6" style={{ height: 280 }}>
             <Line options={lineOptions} data={lineData} />
+          </div>
+          <div className="bg-white rounded-xl shadow p-6" style={{ height: 280 }}>
+            <Line options={forecastOptions} data={forecastData} />
           </div>
         </div>
 

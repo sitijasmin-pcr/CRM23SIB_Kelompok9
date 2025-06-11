@@ -1,261 +1,354 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 
-const dummyCustomers = [
-  { id: 1, name: "Budi Santoso" },
-  { id: 2, name: "Siti Aminah" },
-  { id: 3, name: "Andi Wijaya" },
-];
-
-const initialSales = [
+const initialOrders = [
   {
-    id: 1,
-    invoice: "INV-001",
-    customerId: 1,
-    date: "2025-05-10",
-    total: 1500000,
-    status: "Lunas",
+    name: "Andi Wijaya",
+    date: "2025-06-09 08:45",
+    member: "Bronze",
+    items: "1x Americano, 1x Croissant",
+    status: "Completed",
+    receipt: "INV-TM-0001",
+  },
+
+  {
+    name: "Sinta Marlina",
+    date: "2025-06-09 09:20",
+    member: "Gold",
+    items: "2x Caramel Macchiato, 1x Chocolate Muffin",
+    status: "Completed",
+    receipt: "INV-TM-0002",
   },
   {
-    id: 2,
-    invoice: "INV-002",
-    customerId: 2,
-    date: "2025-05-11",
-    total: 250000,
-    status: "Belum Lunas",
+    name: "Dimas Pratama",
+    date: "2025-06-09 10:10",
+    member: "Silver",
+    items: "1x Cold Brew, 1x Tuna Sandwich",
+    status: "Processing",
+    receipt: "INV-TM-0003",
+  },
+  {
+    name: "Clara Nathania",
+    date: "2025-06-09 10:45",
+    member: "Silver",
+    items: "1x Vanilla Latte",
+    status: "Pending",
+    receipt: "INV-TM-0004",
+  },
+  {
+    name: "Fajar Nugroho",
+    date: "2025-06-09 11:00",
+    member: "Gold",
+    items: "1x Espresso",
+    status: "Canceled",
+    receipt: "INV-TM-0005",
   },
 ];
 
-function formatCurrency(num) {
-  return new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
-  }).format(num);
-}
+const statusColors = {
+  Completed: "bg-green-500",
+  Processing: "bg-gray-500",
+  Pending: "bg-yellow-400 text-black",
+  Canceled: "bg-red-500",
+};
 
-export default function SalesManagement() {
-  const [sales, setSales] = useState(initialSales);
-  const [showForm, setShowForm] = useState(false);
-  const [formData, setFormData] = useState({
-    invoice: "",
-    customerId: "",
-    date: "",
-    total: "",
-    status: "Belum Lunas",
+
+const memberColors = {
+  Bronze: "bg-yellow-700",
+  Silver: "bg-gray-400",
+  Gold: "bg-yellow-400",
+};
+
+const parseItems = (itemsStr) =>
+  itemsStr.split(",").map((item) => {
+    const [qty, ...nameParts] = item.trim().split("x ");
+    return {
+      name: nameParts.join("x ").trim(),
+      qty: parseInt(qty),
+    };
   });
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+const prices = {
+  Americano: 12000,
+  Croissant: 20000,
+  Espresso: 10000,
+  "Caramel Macchiato": 25000,
+  "Chocolate Muffin": 15000,
+  "Cold Brew": 18000,
+  "Tuna Sandwich": 22000,
+  "Vanilla Latte": 19000,
+};
+
+const OrderPage = () => {
+  const [orders, setOrders] = useState(initialOrders);
+  const [selectedOrder, setSelectedOrder] = useState(null);
+
+  const handleStatusChange = (index, newStatus) => {
+    const updated = [...orders];
+    updated[index].status = newStatus;
+    setOrders(updated);
   };
 
-  const handleAddSale = () => {
-    if (
-      !formData.invoice ||
-      !formData.customerId ||
-      !formData.date ||
-      !formData.total
-    ) {
-      alert("Semua field wajib diisi!");
-      return;
-    }
-    const newSale = {
-      id: sales.length + 1,
-      invoice: formData.invoice,
-      customerId: Number(formData.customerId),
-      date: formData.date,
-      total: Number(formData.total),
-      status: formData.status,
+  const summary = useMemo(() => {
+    const activeOrders = orders.filter((o) => o.status !== "Canceled");
+    const done = activeOrders.filter((o) => o.status === "Completed").length;
+    const canceled = orders.filter((o) => o.status === "Canceled").length;
+    const total = activeOrders.length;
+
+    const totalProducts = activeOrders.reduce((sum, o) => {
+      const count = o.items
+        .split(",")
+        .map((item) => {
+          const match = item.trim().match(/^(\d+)x/);
+          return match ? parseInt(match[1]) : 0;
+        })
+        .reduce((a, b) => a + b, 0);
+      return sum + count;
+    }, 0);
+
+    return {
+      done,
+      total,
+      canceled,
+      totalProducts,
+      percentTotal: 100,
+      percentDone: total > 0 ? Math.round((done / total) * 100) : 0,
+      percentCanceled:
+        orders.length > 0 ? Math.round((canceled / orders.length) * 100) : 0,
+      percentItems: total > 0 ? Math.round((totalProducts / total) * 100) : 0,
     };
-    setSales([...sales, newSale]);
-    setFormData({
-      invoice: "",
-      customerId: "",
-      date: "",
-      total: "",
-      status: "Belum Lunas",
-    });
-    setShowForm(false);
+  }, [orders]);
+
+  const calculateTotal = (itemsStr) => {
+    return parseItems(itemsStr).reduce((sum, item) => {
+      const price = prices[item.name] || 0;
+      return sum + price * item.qty;
+    }, 0);
   };
 
-  const handleDelete = (id) => {
-    if (window.confirm("Yakin ingin menghapus penjualan ini?")) {
-      setSales(sales.filter((s) => s.id !== id));
-    }
-  };
-
-  const getCustomerName = (id) => {
-    const cust = dummyCustomers.find((c) => c.id === id);
-    return cust ? cust.name : "-";
+  const handleDownload = () => {
+    alert("Fitur download masih dalam pengembangan.");
   };
 
   return (
-    <div className="p-6 max-w-5xl mx-auto">
-      <h1 className="text-2xl font-semibold mb-4">Management Penjualan</h1>
+    <div className="p-8 bg-gray-50 min-h-screen">
+      <h1 className="text-3xl font-bold text-center text-orange-500 mb-6">
+        Order Page
+      </h1>
 
-      <button
-        onClick={() => setShowForm((prev) => !prev)}
-        className="mb-4 px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition"
-      >
-        {showForm ? "Batal Tambah Penjualan" : "Tambah Penjualan"}
-      </button>
+      {/* Summary Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-8">
+        <div className="bg-white p-4 rounded-xl shadow text-center">
+          <h3 className="text-sm font-semibold text-gray-500">Total Orders</h3>
+          <p className="text-2xl font-bold text-orange-500">{summary.total}</p>
+          <p className="text-xs text-gray-400">
+            {summary.percentTotal}% of total
+          </p>
+        </div>
+        <div className="bg-white p-4 rounded-xl shadow text-center">
+          <h3 className="text-sm font-semibold text-gray-500">Completed</h3>
+          <p className="text-2xl font-bold text-green-500">{summary.done}</p>
+          <p className="text-xs text-gray-400">
+            {summary.percentDone}% of total
+          </p>
+        </div>
+        <div className="bg-white p-4 rounded-xl shadow text-center">
+          <h3 className="text-sm font-semibold text-gray-500">Canceled</h3>
+          <p className="text-2xl font-bold text-yellow-500">
+            {summary.canceled}
+          </p>
+          <p className="text-xs text-gray-400">
+            {summary.percentCanceled}% of total
+          </p>
+        </div>
+        <div className="bg-white p-4 rounded-xl shadow text-center">
+          <h3 className="text-sm font-semibold text-gray-500">Total Items</h3>
+          <p className="text-2xl font-bold text-blue-500">
+            {summary.totalProducts}
+          </p>
+          <p className="text-xs text-gray-400">
+            {summary.percentItems}% of total
+          </p>
+        </div>
+      </div>
 
-      {showForm && (
-        <div className="mb-6 p-4 border border-gray-300 rounded shadow-sm bg-white">
-          <div className="mb-2">
-            <label className="block font-medium mb-1">Nomor Invoice</label>
-            <input
-              type="text"
-              name="invoice"
-              value={formData.invoice}
-              onChange={handleInputChange}
-              placeholder="Misal: INV-003"
-              className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-indigo-400"
-            />
-          </div>
-
-          <div className="mb-2">
-            <label className="block font-medium mb-1">Pelanggan</label>
-            <select
-              name="customerId"
-              value={formData.customerId}
-              onChange={handleInputChange}
-              className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-indigo-400"
-            >
-              <option value="">-- Pilih Pelanggan --</option>
-              {dummyCustomers.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.name}
-                </option>
+      {/* Orders Table */}
+      <div className="bg-white p-6 rounded-2xl shadow-xl">
+        <h2 className="text-xl font-bold text-orange-500 mb-4">
+          Order Request List
+        </h2>
+        <div className="overflow-x-auto">
+          <table className="min-w-full table-auto text-left">
+            <thead>
+              <tr className="text-gray-600 bg-orange-100">
+                <th className="py-3 px-4">Name</th>
+                <th className="py-3 px-4">Order Date</th>
+                <th className="py-3 px-4">Member Type</th>
+                <th className="py-3 px-4">Items</th>
+                <th className="py-3 px-4">Status</th>
+                <th className="py-3 px-4">Receipt</th>
+              </tr>
+            </thead>
+            <tbody>
+              {orders.map((order, idx) => (
+                <tr
+                  key={order.receipt || idx}
+                  className="border-b hover:bg-gray-50"
+                >
+                  <td className="py-3 px-4 font-medium">{order.name}</td>
+                  <td className="py-3 px-4">{order.date}</td>
+                  <td className="py-3 px-4">
+                    <span
+                      className={`text-white px-3 py-1 rounded-full text-sm font-semibold ${
+                        memberColors[order.member]
+                      }`}
+                    >
+                      {order.member}
+                    </span>
+                  </td>
+                  <td className="py-3 px-4 text-sm">{order.items}</td>
+                  <td className="py-3 px-4">
+                    <select
+                      value={order.status}
+                      onChange={(e) => handleStatusChange(idx, e.target.value)}
+                      className={`text-white px-3 py-1 rounded-full text-sm font-semibold focus:outline-none ${
+                        statusColors[order.status]
+                      }`}
+                    >
+                      <option value="Completed">Completed</option>
+                      <option value="Processing">Processing</option>
+                      <option value="Pending">Pending</option>
+                      <option value="Canceled">Canceled</option>
+                    </select>
+                  </td>
+                  <td className="py-3 px-4">
+                    <div className="flex items-center gap-2">
+                      <span>{order.receipt}</span>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation(); // mencegah trigger klik baris
+                          setSelectedOrder(order); // buka modal
+                        }}
+                        className="text-blue-500 hover:text-blue-700"
+                        title="View Receipt"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-5 w-5"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          strokeWidth={2}
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1M7 10l5 5m0 0l5-5m-5 5V4"
+                          />
+                        </svg>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
               ))}
-            </select>
-          </div>
+            </tbody>
+          </table>
+        </div>
+      </div>
 
-          <div className="mb-2">
-            <label className="block font-medium mb-1">Tanggal</label>
-            <input
-              type="date"
-              name="date"
-              value={formData.date}
-              onChange={handleInputChange}
-              className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-indigo-400"
-            />
-          </div>
-
-          <div className="mb-2">
-            <label className="block font-medium mb-1">Total (Rp)</label>
-            <input
-              type="number"
-              name="total"
-              value={formData.total}
-              onChange={handleInputChange}
-              placeholder="Jumlah total penjualan"
-              className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-indigo-400"
-              min="0"
-            />
-          </div>
-
-          <div className="mb-4">
-            <label className="block font-medium mb-1">Status</label>
-            <select
-              name="status"
-              value={formData.status}
-              onChange={handleInputChange}
-              className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-indigo-400"
+      {/* Receipt Modal */}
+      {selectedOrder && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white rounded-2xl shadow-xl p-10 w-[700px] relative">
+            <button
+              className="absolute top-3 right-3 text-gray-400 hover:text-gray-600"
+              onClick={() => setSelectedOrder(null)}
             >
-              <option value="Belum Lunas">Belum Lunas</option>
-              <option value="Lunas">Lunas</option>
-              <option value="Batal">Batal</option>
-            </select>
-          </div>
+              ✕
+            </button>
 
-          <button
-            onClick={handleAddSale}
-            className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
-          >
-            Simpan
-          </button>
+            <div className="text-center mb-6">
+              <h1 className="text-2xl font-bold text-orange-500">
+                TOMORO COFFEE
+              </h1>
+              <p className="text-orange-500 font-semibold">
+                THANKS FOR YOUR ORDER
+              </p>
+            </div>
+
+            <div className="mb-4">
+              <div className="grid grid-cols-3 gap-2 text-sm font-semibold text-gray-500 mb-1">
+                <span>ORDER RECEIPT:</span>
+                <span className="col-span-2 text-black">
+                  {selectedOrder.receipt}
+                </span>
+                <span>NAME:</span>
+                <span className="col-span-2 text-black">
+                  {selectedOrder.name}
+                </span>
+                <span>ORDER DATE:</span>
+                <span className="col-span-2 text-black">
+                  {selectedOrder.date}
+                </span>
+              </div>
+            </div>
+
+            <table className="w-full text-sm mb-6">
+              <thead className="border-b border-gray-300 text-left text-gray-500">
+                <tr>
+                  <th className="py-2">PRODUCT</th>
+                  <th className="py-2">QTY</th>
+                  <th className="py-2">PRICE</th>
+                  <th className="py-2">TOTAL</th>
+                </tr>
+              </thead>
+              <tbody>
+                {parseItems(selectedOrder.items).map((item, i) => (
+                  <tr key={i} className="font-medium text-black">
+                    <td className="py-2">{item.name}</td>
+                    <td className="py-2">{item.qty}</td>
+                    <td className="py-2">
+                      Rp.{prices[item.name]?.toLocaleString()}
+                    </td>
+                    <td className="py-2">
+                      Rp.{(prices[item.name] * item.qty)?.toLocaleString()}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+
+            <div className="flex justify-end text-sm text-gray-600 font-semibold space-y-1 flex-col items-end mb-4">
+              <div className="flex w-1/2 justify-between">
+                <span>SUBTOTAL</span>
+                <span>
+                  Rp.{calculateTotal(selectedOrder.items).toLocaleString()}
+                </span>
+              </div>
+              <div className="flex w-1/2 justify-between">
+                <span>DISCOUNT</span>
+                <span>0%</span>
+              </div>
+              <div className="flex w-1/2 justify-between border-t pt-1">
+                <span>TOTAL</span>
+                <span>
+                  Rp.{calculateTotal(selectedOrder.items).toLocaleString()}
+                </span>
+              </div>
+            </div>
+
+            <div className="text-center">
+              <button
+                onClick={handleDownload}
+                className="bg-blue-500 text-white px-6 py-2 rounded-full font-semibold text-sm shadow hover:bg-blue-600"
+              >
+                DOWNLOAD RECEIPT
+              </button>
+            </div>
+          </div>
         </div>
       )}
-
-      <div className="overflow-x-auto bg-white rounded shadow">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Invoice
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Pelanggan
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Tanggal
-              </th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Total
-              </th>
-              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Status
-              </th>
-              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Aksi
-              </th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-200">
-            {sales.map((sale) => (
-              <tr key={sale.id} className="hover:bg-gray-50">
-                <td className="px-6 py-4 whitespace-nowrap">{sale.invoice}</td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  {getCustomerName(sale.customerId)}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">{sale.date}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-right">
-                  {formatCurrency(sale.total)}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-center">
-                  {sale.status === "Lunas" ? (
-                    <span className="inline-flex px-2 text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                      Lunas
-                    </span>
-                  ) : sale.status === "Belum Lunas" ? (
-                    <span className="inline-flex px-2 text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
-                      Belum Lunas
-                    </span>
-                  ) : (
-                    <span className="inline-flex px-2 text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
-                      Batal
-                    </span>
-                  )}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-center space-x-2">
-                  <button
-                    className="text-indigo-600 hover:text-indigo-900 font-semibold"
-                    onClick={() => alert("Fitur Edit belum tersedia")}
-                  >
-                    Edit
-                  </button>
-                  <button
-                    className="text-red-600 hover:text-red-900 font-semibold"
-                    onClick={() => handleDelete(sale.id)}
-                  >
-                    Hapus
-                  </button>
-                </td>
-              </tr>
-            ))}
-            {sales.length === 0 && (
-              <tr>
-                <td colSpan={6} className="text-center py-4 text-gray-500">
-                  Tidak ada data penjualan
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
     </div>
   );
-}
+};
+
+export default OrderPage;
