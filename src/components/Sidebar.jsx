@@ -13,6 +13,8 @@ import {
 import { Link, useLocation } from 'react-router-dom';
 import { FaCoffee, FaQuestionCircle } from "react-icons/fa";
 import { MdPeopleAlt, MdFeedback  } from "react-icons/md";
+import { FaMapLocationDot } from "react-icons/fa6";
+import { AiFillSchedule } from "react-icons/ai";
 
 const menuItems = [
   { name: 'Dashboard', icon: <LayoutDashboard />, path: '/' },
@@ -20,6 +22,10 @@ const menuItems = [
   { name: 'Sales', icon: <ShoppingCart />, path: '/sales' },
   { name: 'Laporan', icon: <BarChart2 />, path: '/laporan' },
   { name: 'Customer', icon: <BsPeopleFill />, path: '/customer' },
+  { name: 'FAQ', icon: <FaQuestionCircle />, path: '/faq' },
+  { name: 'Feedback', icon: <MdFeedback />, path: '/feedback' },
+  { name: 'Shift', icon: <AiFillSchedule />, path: '/shiftManagement' },
+  { name: 'Outlet', icon: <FaMapLocationDot />, path: '/branch' },
 ]
 
 const accountItems = [

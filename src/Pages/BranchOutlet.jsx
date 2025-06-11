@@ -1,7 +1,7 @@
 // src/Pages/BranchOutlet.jsx
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { HiLocationMarker } from 'react-icons/hi';
+// import { HiLocationMarker } from 'react-icons/hi';
 
 const branches = [
   { name: 'Tomoro Coffee - Sembilang', path: 'https://g.co/kgs/Zhk6wiy' },
