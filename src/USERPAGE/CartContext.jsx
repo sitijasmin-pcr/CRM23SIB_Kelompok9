@@ -39,7 +39,7 @@ export const CartProvider = ({ children }) => {
           {
             id: product.id,
             name: product.nama, // Sesuaikan dengan nama kolom dari Supabase Anda
-            price: product.harga, // Sesuaikan dengan nama kolom dari Supabase Anda
+            price: product.harga, 
             quantity: 1,
             sugarLevel: "Sedang", // Tingkat gula default
             image: product.gambar || "/img/default-product.png", // Gunakan 'gambar' dari Supabase, dengan fallback
